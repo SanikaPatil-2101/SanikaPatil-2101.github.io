@@ -1,10 +1,10 @@
 /**
  * @file three-robot.js
- * @brief Interactive 3D WebGL Digital Twin of Sanika's 5-DOF Robotic Arm
- * @author Sanika Patil
+ * @brief Interactive 3D WebGL Digital Twin of Vivek's 5-DOF Robotic Arm
+ * @author Vivek Bharat Toradmal
  *
- * Renders the authentic Autodesk Fusion 360 CAD meshes (Base, Shoulder, Elbow,
- * Arm, Wrist, Gripper) matching ROS 2 / RViz kinematic axes, revolute joints,
+ * Renders authentic Autodesk Fusion 360 CAD meshes (Base, Shoulder, Elbow,
+ * Arm, Wrist, Gripper) matching ROS 2 Humble / RViz kinematic tree, revolute axes,
  * and real-time interactive actuator controls.
  */
 
@@ -13,16 +13,17 @@
   if (!container) return;
 
   let scene, camera, renderer, controls;
-  let robotBase, shoulderGroup, arm1Group, arm2Group, wristGroup, gripperGroup;
-  let leftFinger, rightFinger;
+  let jointNodes = {};
+  let gripperMesh = null;
   let isGripperOpen = true;
 
-  // Joint angle state (degrees) matching robot-sim.js
+  // Joint angle state (degrees) matching robot-sim.js & URDF limits
   let angles = {
-    j1: 0,   // Base Yaw (Revolute 1 - Y axis rotation)
-    j2: 35,  // Shoulder Pitch (Joint 2 - Z axis rotation, safe upright range: -10 to 105)
-    j3: -30, // Elbow Pitch (Joint 3 - Z axis rotation)
-    j4: 0    // Wrist Pitch (Joint 4 - Z axis rotation)
+    j1: 0,   // Base Yaw (Revolute 1 - Z axis rotation: -90° to +90°)
+    j2: 35,  // Shoulder Pitch (Revolute 2 - Z axis rotation: -10° to +105°)
+    j3: -30, // Elbow Pitch (Revolute 3 - Z axis rotation: -90° to +90°)
+    j4: 0,   // Wrist Roll (Revolute 4 - X axis rotation: -90° to +90°)
+    j5: 0    // End-Effector Pitch (Revolute 5 - X axis rotation: -60° to +60°)
   };
 
   // Industrial Materials (Authentic PBR finishes matching RViz / Industrial CAD)
@@ -62,21 +63,14 @@
     roughness: 0.20
   });
 
-  const chromeMat = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
-    metalness: 0.95,
-    roughness: 0.10
-  });
-
-  const darkMetalMat = new THREE.MeshStandardMaterial({
-    color: 0x0f172a,
-    metalness: 0.90,
-    roughness: 0.35
-  });
-
-  const ledGlowMat = new THREE.MeshBasicMaterial({
-    color: 0x38bdf8
-  });
+  /**
+   * Sets URDF Transform with intrinsic ZYX rotation order.
+   */
+  function setURDFTransform(obj, xyz, rpyArr) {
+    obj.position.set(xyz[0], xyz[1], xyz[2]);
+    obj.rotation.order = 'ZYX';
+    obj.rotation.set(rpyArr[0], rpyArr[1], rpyArr[2]);
+  }
 
   /**
    * Decodes Base64 binary string to an ArrayBuffer in memory (Zero CORS, 100% offline).
@@ -92,85 +86,78 @@
   }
 
   function init() {
-    // 1. Scene Setup
+    // 1. Set Robotic Coordinate Frame: Z is UP (matching ROS 2 / Autodesk Fusion 360)
+    THREE.Object3D.DefaultUp.set(0, 0, 1);
+
+    // 2. Scene Setup
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0f1d);
-    scene.fog = new THREE.FogExp2(0x0a0f1d, 0.0014);
+    scene.fog = new THREE.FogExp2(0x0a0f1d, 0.45);
 
-    // 2. Camera Setup
+    // 3. Camera Setup (Meter scale: ~0.5m viewing distance)
     const width = container.clientWidth || 540;
     const height = container.clientHeight || 400;
     const aspect = width / height;
-    camera = new THREE.PerspectiveCamera(45, aspect, 1, 2500);
-    camera.position.set(280, 200, 260);
+    camera = new THREE.PerspectiveCamera(45, aspect, 0.01, 20.0);
+    camera.position.set(-0.45, -0.55, 0.38);
 
-    // 3. Renderer Setup
+    // 4. Renderer Setup
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+    container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 4. Controls
+    // 5. Orbit Controls (Targeting Center of Robot Kinematics)
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.maxPolarAngle = Math.PI / 2 + 0.02; // Prevent camera sinking under ground
-    controls.minDistance = 60;
-    controls.maxDistance = 900;
-    controls.target.set(30, 90, 0);
+    controls.maxPolarAngle = Math.PI / 2 + 0.04; // Restrict camera from sinking beneath floor
+    controls.minDistance = 0.15;
+    controls.maxDistance = 1.8;
+    controls.target.set(-0.08, -0.06, 0.12);
+    controls.update();
 
-    // 5. Studio Lighting
+    // 6. Studio Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight(0x38bdf8, 0x0f172a, 0.6);
-    hemiLight.position.set(0, 300, 0);
-    scene.add(hemiLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    keyLight.position.set(160, 320, 220);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.25);
+    keyLight.position.set(1.0, -1.0, 2.0);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
+    keyLight.shadow.camera.near = 0.1;
+    keyLight.shadow.camera.far = 4.0;
+    keyLight.shadow.bias = -0.001;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.8);
-    fillLight.position.set(-200, 150, -180);
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.65);
+    fillLight.position.set(-1.0, 1.0, 1.2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0x818cf8, 0.5);
-    rimLight.position.set(0, -50, 200);
+    const rimLight = new THREE.DirectionalLight(0x818cf8, 0.45);
+    rimLight.position.set(0.5, 1.5, 0.6);
     scene.add(rimLight);
 
-    // 6. Ground Grid & Pedestal
-    const grid = new THREE.GridHelper(600, 30, 0x38bdf8, 0x1e293b);
-    grid.position.y = 0;
+    // 7. Ground Grid (Lies in XY plane at Z=0 ground elevation)
+    const grid = new THREE.GridHelper(0.9, 18, 0x38bdf8, 0x1e293b);
+    grid.rotation.x = Math.PI / 2;
+    grid.position.set(-0.08, 0, 0);
+    grid.receiveShadow = true;
     scene.add(grid);
 
-    // Mounting Base Plinth
-    const plinthGeo = new THREE.CylinderGeometry(75, 80, 8, 36);
-    const plinth = new THREE.Mesh(plinthGeo, baseMat);
-    plinth.position.y = 4;
-    plinth.receiveShadow = true;
-    scene.add(plinth);
-
-    // Cyan Status Ring
-    const statusRing = new THREE.Mesh(new THREE.TorusGeometry(72, 1.2, 16, 48), ledGlowMat);
-    statusRing.position.y = 8;
-    statusRing.rotation.x = Math.PI / 2;
-    scene.add(statusRing);
-
-    // 7. Load / Assemble Robot Model
+    // 8. Assemble Robot Model from Authentic CAD STLs
     buildRobotArm();
 
-    // 8. Event Listeners
+    // 9. Event Listeners & Input Sync
     window.addEventListener('resize', onWindowResize);
     setupSliderListeners();
 
-    // 9. Start Render Loop
+    // 10. Start Animation Render Loop
     animate();
   }
 
@@ -200,262 +187,146 @@
   }
 
   /**
-   * Builds the authentic CAD assembly using Sanika's Fusion 360 models.
+   * Builds the authentic CAD assembly using Vivek's exact Fusion 360 / ROS 2 URDF tree.
    */
   function assembleCadRobot(loader) {
     const stl = window.ROBOT_STL_DATA;
 
-    // --- 1. BASE LINK (Fixed Base on Ground) ---
-    robotBase = new THREE.Group();
-    scene.add(robotBase);
+    // --- Kinematic Hierarchy (Exact URDF Frame Offsets in Meters) ---
+    const worldNode = new THREE.Group();
+    scene.add(worldNode);
 
-    const baseBuffer = base64ToArrayBuffer(stl.Base);
-    const baseGeo = loader.parse(baseBuffer);
-    // Align Base CAD coordinates: CAD +Z is UP, Turntable center at X = -100
-    const basePos = baseGeo.attributes.position;
-    for (let i = 0; i < basePos.count; i++) {
-      const x = basePos.getX(i);
-      const y = basePos.getY(i);
-      const z = basePos.getZ(i);
-      // CAD (x, y, z) -> Three.js (x + 100, z, -y)
-      basePos.setXYZ(i, x + 100, z, -y);
-    }
-    baseGeo.computeVertexNormals();
+    // Joint 1: Base Turntable Yaw ([-0.10, 0, 0.07], axis: [0, 0, 1])
+    const j1 = new THREE.Group();
+    setURDFTransform(j1, [-0.10, 0, 0.07], [0, 0, 0]);
+    worldNode.add(j1);
+    const j1_rot = new THREE.Group();
+    j1.add(j1_rot);
 
-    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.castShadow = true;
-    baseMesh.receiveShadow = true;
-    robotBase.add(baseMesh);
+    // Joint 2: Shoulder Pitch ([0.00906, -0.01413, 0.03490], rpy: [1.5708, 0, -1.5708], axis: [0, 0, 1])
+    const j2 = new THREE.Group();
+    setURDFTransform(j2, [0.00906, -0.01413, 0.03490], [1.5708, 0, -1.5708]);
+    j1_rot.add(j2);
+    const j2_rot = new THREE.Group();
+    j2.add(j2_rot);
 
-    // --- 2. SHOULDER GROUP (Joint 1: Base Yaw / Revolute 1) ---
-    // Turntable center sits at Y = 70 mm above ground
-    shoulderGroup = new THREE.Group();
-    shoulderGroup.position.set(0, 70, 0);
-    robotBase.add(shoulderGroup);
+    // Joint 3: Elbow Pitch ([0.1115, 0, 0], rpy: [3.1416, 0, 1.5708], axis: [0, 0, 1])
+    const j3 = new THREE.Group();
+    setURDFTransform(j3, [0.1115, 0, 0], [3.1416, 0, 1.5708]);
+    j2_rot.add(j3);
+    const j3_rot = new THREE.Group();
+    j3.add(j3_rot);
 
-    const shoulderBuffer = base64ToArrayBuffer(stl.Shoulder);
-    const shoulderGeo = loader.parse(shoulderBuffer);
-    const shPos = shoulderGeo.attributes.position;
-    for (let i = 0; i < shPos.count; i++) {
-      const x = shPos.getX(i);
-      const y = shPos.getY(i);
-      const z = shPos.getZ(i);
-      // CAD (x, y, z) -> Three.js (x, z, -y)
-      shPos.setXYZ(i, x, z, -y);
-    }
-    shoulderGeo.computeVertexNormals();
+    // Joint 4: Wrist Roll ([0.1035, -0.008, 0.01825], rpy: [3.14159, 0, 0], axis: [1, 0, 0])
+    const j4 = new THREE.Group();
+    setURDFTransform(j4, [0.1035, -0.008, 0.01825], [3.14159, 0, 0]);
+    j3_rot.add(j4);
+    const j4_rot = new THREE.Group();
+    j4.add(j4_rot);
 
-    const shoulderMesh = new THREE.Mesh(shoulderGeo, shoulderMat);
-    shoulderMesh.castShadow = true;
-    shoulderMesh.receiveShadow = true;
-    shoulderGroup.add(shoulderMesh);
+    // Joint 5: Gripper Pitch ([0.021, 0, -0.0165], rpy: [3.14159, -1.5708, 0], axis: [1, 0, 0])
+    const j5 = new THREE.Group();
+    setURDFTransform(j5, [0.021, 0, -0.0165], [3.14159, -1.5708, 0]);
+    j4_rot.add(j5);
+    const j5_rot = new THREE.Group();
+    j5.add(j5_rot);
 
-    // Decorative bearing / servo ring
-    const shoulderBearing = new THREE.Mesh(new THREE.CylinderGeometry(49, 49, 4, 32), chromeMat);
-    shoulderBearing.position.set(0, 2, 0);
-    shoulderGroup.add(shoulderBearing);
+    jointNodes = { j1_rot, j2_rot, j3_rot, j4_rot, j5_rot };
 
-    // --- 3. LOWER ARM GROUP (Joint 2: Shoulder Pitch) ---
-    // Pivot at top bracket of shoulder: X = 14, Y = 48.8, Z = 23.5 mm
-    arm1Group = new THREE.Group();
-    arm1Group.position.set(14, 48.8, 23.5);
-    shoulderGroup.add(arm1Group);
+    // --- Mesh Offsets (Exact URDF Visual Tag Offsets) ---
+    const linkConfigs = [
+      { key: 'Base', parent: worldNode, offset: [0, 0, 0], mat: baseMat },
+      { key: 'Shoulder', parent: j1_rot, offset: [0, 0, 0], mat: shoulderMat },
+      { key: 'Elbow', parent: j2_rot, offset: [0, 0, 0], mat: elbowMat },
+      { key: 'arm', parent: j3_rot, offset: [0, 0, 0], mat: armMat },
+      { key: 'Wrist', parent: j4_rot, offset: [0, 0.015, -0.0125], mat: wristMat },
+      { key: 'Gripper', parent: j5_rot, offset: [-0.013936, 0.020, 0.015], mat: gripperMat }
+    ];
 
-    // Shoulder Joint Pin Axle
-    const pin1 = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 26, 24), chromeMat);
-    pin1.rotation.x = Math.PI / 2;
-    pin1.castShadow = true;
-    arm1Group.add(pin1);
+    linkConfigs.forEach(({ key, parent, offset, mat }) => {
+      if (stl[key]) {
+        const buf = base64ToArrayBuffer(stl[key]);
+        const geom = loader.parse(buf);
+        geom.computeVertexNormals();
+        const mesh = new THREE.Mesh(geom, mat);
+        // Scale millimeter CAD coordinates into meters
+        mesh.scale.set(0.001, 0.001, 0.001);
+        mesh.position.set(offset[0], offset[1], offset[2]);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        parent.add(mesh);
 
-    const elbowBuffer = base64ToArrayBuffer(stl.Elbow);
-    const elbowGeo = loader.parse(elbowBuffer);
-    const elPos = elbowGeo.attributes.position;
-    for (let i = 0; i < elPos.count; i++) {
-      const x = elPos.getX(i);
-      const y = elPos.getY(i);
-      const z = elPos.getZ(i);
-      // Center 20mm thickness on pivot plane (z - 10)
-      elPos.setXYZ(i, x, y, z - 10);
-    }
-    elbowGeo.computeVertexNormals();
-
-    const elbowMesh = new THREE.Mesh(elbowGeo, elbowMat);
-    elbowMesh.castShadow = true;
-    elbowMesh.receiveShadow = true;
-    arm1Group.add(elbowMesh);
-
-    // --- 4. FOREARM GROUP (Joint 3: Elbow Pitch) ---
-    // Hole-to-hole distance on Elbow link = 111.46 mm
-    arm2Group = new THREE.Group();
-    arm2Group.position.set(111.46, 0, 0);
-    arm1Group.add(arm2Group);
-
-    // Elbow Joint Pin Axle
-    const pin2 = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 36, 24), chromeMat);
-    pin2.rotation.x = Math.PI / 2;
-    pin2.castShadow = true;
-    arm2Group.add(pin2);
-
-    const armBuffer = base64ToArrayBuffer(stl.arm);
-    const armGeo = loader.parse(armBuffer);
-    const armPos = armGeo.attributes.position;
-    for (let i = 0; i < armPos.count; i++) {
-      const x = armPos.getX(i);
-      const y = armPos.getY(i);
-      const z = armPos.getZ(i);
-      // Center 30mm thickness on pivot plane (z - 15)
-      armPos.setXYZ(i, x, y, z - 15);
-    }
-    armGeo.computeVertexNormals();
-
-    const armMesh = new THREE.Mesh(armGeo, armMat);
-    armMesh.castShadow = true;
-    armMesh.receiveShadow = true;
-    arm2Group.add(armMesh);
-
-    // --- 5. WRIST GROUP (Joint 4: Wrist Pitch) ---
-    // Arm link length = 85 mm
-    wristGroup = new THREE.Group();
-    wristGroup.position.set(85, 0, 0);
-    arm2Group.add(wristGroup);
-
-    // Wrist Joint Pin Axle
-    const pin3 = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 30, 20), chromeMat);
-    pin3.rotation.x = Math.PI / 2;
-    wristGroup.add(pin3);
-
-    const wristBuffer = base64ToArrayBuffer(stl.Wrist);
-    const wristGeo = loader.parse(wristBuffer);
-    const wrPos = wristGeo.attributes.position;
-    for (let i = 0; i < wrPos.count; i++) {
-      const x = wrPos.getX(i);
-      const y = wrPos.getY(i);
-      const z = wrPos.getZ(i);
-      wrPos.setXYZ(i, x, y + 15, z - 12.5);
-    }
-    wristGeo.computeVertexNormals();
-
-    const wristMesh = new THREE.Mesh(wristGeo, wristMat);
-    wristMesh.castShadow = true;
-    wristMesh.receiveShadow = true;
-    wristGroup.add(wristMesh);
-
-    // --- 6. GRIPPER END-EFFECTOR ---
-    gripperGroup = new THREE.Group();
-    gripperGroup.position.set(45, 0, 0);
-    wristGroup.add(gripperGroup);
-
-    const gripBuffer = base64ToArrayBuffer(stl.Gripper);
-    const gripGeo = loader.parse(gripBuffer);
-    const grPos = gripGeo.attributes.position;
-    for (let i = 0; i < grPos.count; i++) {
-      const x = grPos.getX(i);
-      const y = grPos.getY(i);
-      const z = grPos.getZ(i);
-      // Orient CAD gripper: CAD +Y forward -> Three.js +X, CAD -Z -> Three.js +Y
-      grPos.setXYZ(i, y - 35, -(z + 12), x);
-    }
-    gripGeo.computeVertexNormals();
-
-    const gripperMesh = new THREE.Mesh(gripGeo, gripperMat);
-    gripperMesh.castShadow = true;
-    gripperMesh.receiveShadow = true;
-    gripperGroup.add(gripperMesh);
-
-    // Functional Articulated Jaw Fingers (Animated open/close)
-    buildGripperFingers(gripperGroup);
-  }
-
-  /**
-   * Adds precision animated fingers at the gripper tip for dynamic grab response.
-   */
-  function buildGripperFingers(parent) {
-    const fingerGeo = new THREE.BoxGeometry(22, 5, 8);
-    const padGeo = new THREE.BoxGeometry(10, 7, 7);
-
-    leftFinger = new THREE.Group();
-    leftFinger.position.set(90, 0, 12);
-    parent.add(leftFinger);
-
-    const leftBlade = new THREE.Mesh(fingerGeo, chromeMat);
-    leftBlade.position.set(10, 0, 0);
-    leftBlade.castShadow = true;
-    leftFinger.add(leftBlade);
-
-    const leftPad = new THREE.Mesh(padGeo, darkMetalMat);
-    leftPad.position.set(18, 0, -2);
-    leftFinger.add(leftPad);
-
-    rightFinger = new THREE.Group();
-    rightFinger.position.set(90, 0, -12);
-    parent.add(rightFinger);
-
-    const rightBlade = new THREE.Mesh(fingerGeo, chromeMat);
-    rightBlade.position.set(10, 0, 0);
-    rightBlade.castShadow = true;
-    rightFinger.add(rightBlade);
-
-    const rightPad = new THREE.Mesh(padGeo, darkMetalMat);
-    rightPad.position.set(18, 0, 2);
-    rightFinger.add(rightPad);
+        if (key === 'Gripper') {
+          gripperMesh = mesh;
+        }
+      }
+    });
   }
 
   /**
    * Procedural fallback if CAD STL binary data is unavailable.
    */
   function buildProceduralFallback() {
-    robotBase = new THREE.Group();
-    scene.add(robotBase);
+    const worldNode = new THREE.Group();
+    scene.add(worldNode);
 
-    const baseCyl = new THREE.Mesh(new THREE.CylinderGeometry(45, 52, 28, 32), baseMat);
-    baseCyl.position.y = 14;
-    baseCyl.castShadow = true;
-    robotBase.add(baseCyl);
+    const baseCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.075, 0.07, 32), baseMat);
+    baseCyl.rotation.x = Math.PI / 2;
+    baseCyl.position.set(-0.10, 0, 0.035);
+    worldNode.add(baseCyl);
 
-    shoulderGroup = new THREE.Group();
-    shoulderGroup.position.set(0, 32, 0);
-    robotBase.add(shoulderGroup);
+    const j1 = new THREE.Group();
+    setURDFTransform(j1, [-0.10, 0, 0.07], [0, 0, 0]);
+    worldNode.add(j1);
+    const j1_rot = new THREE.Group();
+    j1.add(j1_rot);
 
-    const shTurret = new THREE.Mesh(new THREE.CylinderGeometry(38, 42, 20, 32), shoulderMat);
-    shTurret.position.y = 10;
-    shTurret.castShadow = true;
-    shoulderGroup.add(shTurret);
+    const shTurret = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.05, 32), shoulderMat);
+    shTurret.rotation.x = Math.PI / 2;
+    shTurret.position.set(0, 0, 0.025);
+    j1_rot.add(shTurret);
 
-    arm1Group = new THREE.Group();
-    arm1Group.position.set(0, 20, 0);
-    shoulderGroup.add(arm1Group);
+    const j2 = new THREE.Group();
+    setURDFTransform(j2, [0.00906, -0.01413, 0.03490], [1.5708, 0, -1.5708]);
+    j1_rot.add(j2);
+    const j2_rot = new THREE.Group();
+    j2.add(j2_rot);
 
-    const arm1Beam = new THREE.Mesh(new THREE.BoxGeometry(105, 14, 18), elbowMat);
-    arm1Beam.position.set(50, 0, 0);
-    arm1Beam.castShadow = true;
-    arm1Group.add(arm1Beam);
+    const arm1Beam = new THREE.Mesh(new THREE.BoxGeometry(0.111, 0.016, 0.02), elbowMat);
+    arm1Beam.position.set(0.055, 0, 0);
+    j2_rot.add(arm1Beam);
 
-    arm2Group = new THREE.Group();
-    arm2Group.position.set(105, 0, 0);
-    arm1Group.add(arm2Group);
+    const j3 = new THREE.Group();
+    setURDFTransform(j3, [0.1115, 0, 0], [3.1416, 0, 1.5708]);
+    j2_rot.add(j3);
+    const j3_rot = new THREE.Group();
+    j3.add(j3_rot);
 
-    const arm2Beam = new THREE.Mesh(new THREE.BoxGeometry(85, 12, 16), armMat);
-    arm2Beam.position.set(40, 0, 0);
-    arm2Beam.castShadow = true;
-    arm2Group.add(arm2Beam);
+    const arm2Beam = new THREE.Mesh(new THREE.BoxGeometry(0.103, 0.014, 0.018), armMat);
+    arm2Beam.position.set(0.051, 0, 0);
+    j3_rot.add(arm2Beam);
 
-    wristGroup = new THREE.Group();
-    wristGroup.position.set(85, 0, 0);
-    arm2Group.add(wristGroup);
+    const j4 = new THREE.Group();
+    setURDFTransform(j4, [0.1035, -0.008, 0.01825], [3.14159, 0, 0]);
+    j3_rot.add(j4);
+    const j4_rot = new THREE.Group();
+    j4.add(j4_rot);
 
-    const wristMesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 16, 16), wristMat);
-    wristMesh.rotation.x = Math.PI / 2;
-    wristGroup.add(wristMesh);
+    const wristCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.025, 16), wristMat);
+    wristCyl.position.set(0.01, 0, 0);
+    j4_rot.add(wristCyl);
 
-    gripperGroup = new THREE.Group();
-    gripperGroup.position.set(20, 0, 0);
-    wristGroup.add(gripperGroup);
+    const j5 = new THREE.Group();
+    setURDFTransform(j5, [0.021, 0, -0.0165], [3.14159, -1.5708, 0]);
+    j4_rot.add(j5);
+    const j5_rot = new THREE.Group();
+    j5.add(j5_rot);
 
-    const gripMesh = new THREE.Mesh(new THREE.BoxGeometry(25, 16, 20), gripperMat);
-    gripMesh.position.set(12, 0, 0);
-    gripperGroup.add(gripMesh);
+    const gripMesh = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.02, 0.025), gripperMat);
+    gripMesh.position.set(0, 0.02, 0);
+    j5_rot.add(gripMesh);
 
-    buildGripperFingers(gripperGroup);
+    jointNodes = { j1_rot, j2_rot, j3_rot, j4_rot, j5_rot };
   }
 
   function setGripperState(open) {
@@ -472,33 +343,37 @@
       }
     }
 
-    if (leftFinger && rightFinger) {
-      const spread = open ? 12 : 3;
-      leftFinger.position.z = spread;
-      rightFinger.position.z = -spread;
+    if (gripperMesh) {
+      // Subtle visual clamp motion on end-effector
+      gripperMesh.scale.x = open ? 0.001 : 0.00092;
+      gripperMesh.scale.z = open ? 0.001 : 0.00088;
     }
   }
 
   /**
-   * Applies the exact joint kinematics matching RViz revolute axes.
+   * Applies the exact joint kinematics matching ROS 2 Humble revolute axes.
    */
   function updateJoints() {
-    // Joint 1: Base Turntable Yaw (Around Three.js Y-axis)
-    if (shoulderGroup) {
-      shoulderGroup.rotation.y = THREE.MathUtils.degToRad(angles.j1);
+    // Joint 1: Base Yaw (Around local Z-axis)
+    if (jointNodes.j1_rot) {
+      jointNodes.j1_rot.rotation.z = THREE.MathUtils.degToRad(angles.j1);
     }
-    // Joint 2: Shoulder Pitch (Around Three.js Z-axis, safe mechanical limits: -10° to +105°)
-    if (arm1Group) {
+    // Joint 2: Shoulder Pitch (Around local Z-axis, safe mechanical limits: -10° to +105°)
+    if (jointNodes.j2_rot) {
       const clampedJ2 = Math.min(Math.max(angles.j2, -10), 105);
-      arm1Group.rotation.z = THREE.MathUtils.degToRad(clampedJ2);
+      jointNodes.j2_rot.rotation.z = THREE.MathUtils.degToRad(clampedJ2);
     }
-    // Joint 3: Elbow Pitch (Around Three.js Z-axis)
-    if (arm2Group) {
-      arm2Group.rotation.z = THREE.MathUtils.degToRad(angles.j3);
+    // Joint 3: Elbow Pitch (Around local Z-axis)
+    if (jointNodes.j3_rot) {
+      jointNodes.j3_rot.rotation.z = THREE.MathUtils.degToRad(angles.j3);
     }
-    // Joint 4: Wrist Pitch (Around Three.js Z-axis)
-    if (wristGroup) {
-      wristGroup.rotation.z = THREE.MathUtils.degToRad(angles.j4);
+    // Joint 4: Wrist Roll (Around local X-axis)
+    if (jointNodes.j4_rot) {
+      jointNodes.j4_rot.rotation.x = THREE.MathUtils.degToRad(angles.j4);
+    }
+    // Joint 5: End-Effector Pitch (Around local X-axis)
+    if (jointNodes.j5_rot) {
+      jointNodes.j5_rot.rotation.x = THREE.MathUtils.degToRad(angles.j5);
     }
   }
 
@@ -528,12 +403,19 @@
       });
     }
 
+    if (btnGrip) {
+      btnGrip.addEventListener('click', () => {
+        setGripperState(!isGripperOpen);
+      });
+    }
+
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         angles.j1 = 0;
         angles.j2 = 35;
         angles.j3 = -30;
         angles.j4 = 0;
+        angles.j5 = 0;
         updateJoints();
         setGripperState(true);
       });
@@ -572,11 +454,11 @@
     if (renderer && scene && camera) renderer.render(scene, camera);
   }
 
-  // Public camera reset
+  // Public Camera Reset
   window.resetThreeCamera = function () {
     if (controls && camera) {
-      camera.position.set(280, 200, 260);
-      controls.target.set(30, 90, 0);
+      camera.position.set(-0.45, -0.55, 0.38);
+      controls.target.set(-0.08, -0.06, 0.12);
       controls.update();
     }
   };
