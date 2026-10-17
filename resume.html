@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume — Sanika Patil | Automation & Robotics Engineer</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11pt;
+      }
+      .resume-paper {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      a {
+        text-decoration: none !important;
+        color: inherit !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-200 min-h-screen py-8 px-4 sm:px-6">
+
+  <!-- Action Bar (Floating on Screen, Hidden during Print) -->
+  <div class="no-print max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-800/90 backdrop-blur p-4 rounded-2xl border border-white/10 shadow-xl">
+    <a href="index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300 transition">
+      <i class="fa-solid fa-arrow-left"></i> Back to Portfolio
+    </a>
+
+    <div class="flex items-center gap-3">
+      <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-sm shadow-lg shadow-sky-500/20 transition">
+        <i class="fa-solid fa-print"></i> Print / Save as PDF
+      </button>
+      <a href="https://github.com/SanikaPatil-2101" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm transition">
+        <i class="fa-brands fa-github"></i> GitHub Profile
+      </a>
+    </div>
+  </div>
+
+  <!-- Printable A4 Resume Sheet -->
+  <main class="resume-paper max-w-4xl mx-auto bg-white text-slate-900 p-8 sm:p-12 rounded-2xl shadow-2xl border border-slate-200">
+    
+    <!-- Header Section -->
+    <header class="border-b-2 border-slate-900 pb-6 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">Sanika Patil</h1>
+          <p class="text-base sm:text-lg font-semibold text-sky-700 mt-1">Automation & Robotics Engineer</p>
+          <p class="text-xs text-slate-600 mt-0.5">Robotics (ROS 2) • Kinematics & Digital Twins • Embedded IoT (ESP32) • Industrial Automation (PLC)</p>
+        </div>
+
+        <div class="text-xs space-y-1 text-slate-600 sm:text-right font-medium">
+          <div><i class="fa-solid fa-location-dot text-slate-400 w-4"></i> Maharashtra, India</div>
+          <div><i class="fa-solid fa-envelope text-slate-400 w-4"></i> sanikapatil2101@gmail.com</div>
+          <div><i class="fa-brands fa-github text-slate-400 w-4"></i> github.com/SanikaPatil-2101</div>
+          <div><i class="fa-solid fa-globe text-slate-400 w-4"></i> SanikaPatil-2101.github.io</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Professional Summary -->
+    <section class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-2">Professional Summary</h2>
+      <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+        Passionate and hands-on <strong>Automation & Robotics Engineer</strong> with extensive experience developing robotic systems, formulating kinematic models in <strong>ROS 2 Humble & Gazebo</strong>, designing precision CAD assemblies, and engineering industrial embedded firmware for <strong>ESP32 & Arduino</strong>. Specialized in bridging mechanical actuation and physical sensor tolerances with robust mathematical control theory, PLC automation, and cloud telemetry.
+      </p>
+    </section>
+
+    <!-- Technical Skills Matrix -->
+    <section class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-3">Technical Competencies</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-700">
+        <div>
+          <span class="font-bold text-slate-900">Robotics & Simulation:</span> 
+          ROS 2 (Humble), URDF / Xacro, RViz2, Gazebo Simulation, Forward & Inverse Kinematics (FK/IK), Hardware Bridges.
+        </div>
+        <div>
+          <span class="font-bold text-slate-900">Mechanical CAD & CAM:</span> 
+          Autodesk Fusion 360, SolidWorks, GD&T, 3D Printing (FDM/CoreXY), STEP 3D Assemblies, Technical 2D Drafting.
+        </div>
+        <div>
+          <span class="font-bold text-slate-900">Embedded Systems & IoT:</span> 
+          ESP-WROOM-32, Arduino, FreeRTOS, PlatformIO, Blynk 2.0 Cloud, NVS Flash Storage, UART/I2C/SPI, Optocouplers.
+        </div>
+        <div>
+          <span class="font-bold text-slate-900">Industrial Automation:</span> 
+          Siemens PLC (S7-1200), TIA Portal, Ladder Logic (LAD), Sensor Interfacing, Relay Actuation.
+        </div>
+        <div class="sm:col-span-2">
+          <span class="font-bold text-slate-900">Programming & Software:</span> 
+          C, C++, Python, JavaScript (ES6+), Three.js WebGL, HTML5 Canvas, Git & GitHub, Linux (WSL2/Ubuntu).
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Engineering Projects -->
+    <section class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-3">Featured Engineering Projects</h2>
+      
+      <div class="space-y-4">
+        <!-- Project 1 -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs">
+            <span class="font-bold text-slate-900 text-sm">5-DOF Articulated Robotic Arm Digital Twin & Geared Gripper</span>
+            <span class="text-sky-700 font-medium">ROS 2 • Three.js • Fusion 360 • Arduino</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mb-1">GitHub: github.com/SanikaPatil-2101/6dof-robotic-arm-ros2</div>
+          <ul class="list-disc list-outside ml-4 text-xs text-slate-700 space-y-1">
+            <li>Designed a complete 5-DOF articulated robot arm with 4-bar parallel gripper linkage in Autodesk Fusion 360 and exported unified URDF/Xacro models with physical collision hulls and inertial tensors.</li>
+            <li>Constructed an interactive 3D Web Command Studio running on Three.js with Cartesian IK jog controls, RGB color sorting, and joint angle telemetry.</li>
+            <li>Programmed a Python hardware serial bridge to synchronize virtual joint angles to physical Arduino/ESP32 driving MG996R and SG90 servos with 50 Hz PWM microsecond telemetry.</li>
+            <li>Published complete CAD package including 7.3 MB 3D STEP assembly and technical PDF drawings.</li>
+          </ul>
+        </div>
+
+        <!-- Project 2 -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs">
+            <span class="font-bold text-slate-900 text-sm">Industrial IoT Smart Relay & Energy Monitor Controller</span>
+            <span class="text-sky-700 font-medium">ESP32 • FreeRTOS • PlatformIO • Blynk Cloud</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mb-1">GitHub: github.com/SanikaPatil-2101/esp32-industrial-iot-controller</div>
+          <ul class="list-disc list-outside ml-4 text-xs text-slate-700 space-y-1">
+            <li>Engineered an industrial equipment controller on ESP-WROOM-32 featuring optocoupler-isolated relay actuation and real-time electrical energy consumption integration ($kWh$).</li>
+            <li>Implemented Non-Volatile Storage (NVS Flash via <code class="font-mono text-[11px]">Preferences.h</code>) to periodically checkpoint energy metrics, ensuring complete data retention across factory power outages.</li>
+            <li>Integrated bidirectional cloud synchronization with Blynk 2.0 Cloud for low-latency (<150 ms) remote smartphone/web switching and live telemetry charts.</li>
+          </ul>
+        </div>
+
+        <!-- Project 3 -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs">
+            <span class="font-bold text-slate-900 text-sm">Precision DIY 3D Printer (CoreXY Architecture)</span>
+            <span class="text-sky-700 font-medium">CoreXY • SolidWorks • Marlin 2.0 • Stepper Tuning</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mb-1">GitHub: github.com/SanikaPatil-2101/Autonomous-mobile-robot-</div>
+          <ul class="list-disc list-outside ml-4 text-xs text-slate-700 space-y-1">
+            <li>Engineered a custom high-precision CoreXY 3D printer frame utilizing 2020 aluminum extrusions and stationary dual stepper kinematics to minimize gantry inertia.</li>
+            <li>Modeled custom parametric hotend cooling ducts and precision belt tensioners in SolidWorks.</li>
+            <li>Calibrated Marlin 2.0 firmware with PID thermal tuning, stepper microstepping, and linear advance parameters for high-speed print reliability.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-2">Education & Credentials</h2>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs">
+        <div>
+          <span class="font-bold text-slate-900">Bachelor of Engineering in Automation & Robotics Engineering</span>
+          <div class="text-slate-600">Specialization in Industrial Robotics, Robot Kinematics, PLC/SCADA Automation & Embedded Systems</div>
+        </div>
+        <span class="text-slate-500 font-medium mt-1 sm:mt-0">Maharashtra, India</span>
+      </div>
+    </section>
+
+    <!-- Engineering Philosophy -->
+    <section>
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-2">Core Engineering Philosophy</h2>
+      <p class="text-xs text-slate-600 italic">
+        "Design with physical reality in mind first — tolerances, thermal dissipation, and inertia — then elevate it with robust mathematical simulation and reliable embedded firmware."
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Print Footer Notice -->
+  <div class="no-print text-center text-xs text-slate-500 mt-6">
+    © 2026 Sanika Patil • Generated from Live Engineering Portfolio (<a href="https://SanikaPatil-2101.github.io" class="text-sky-400 hover:underline">SanikaPatil-2101.github.io</a>)
+  </div>
+
+</body>
+</html>
+

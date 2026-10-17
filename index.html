@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanika Patil | Automation & Robotics Engineer • ROS 2, Embedded IoT & CAD</title>
+  <meta name="description" content="Portfolio of Sanika Patil — Automation & Robotics Engineer specializing in ROS 2 Robotics, Digital Twins, CAD/CAM, and ESP32 Embedded IoT.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+              950: '#082f49'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Three.js Engine & Controls (Local & Offline Ready) -->
+  <script src="js/three.min.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <script src="js/STLLoader.js"></script>
+
+  <!-- Custom Master Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen relative bg-grid-pattern selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Ambient Glow -->
+  <div class="hero-glow"></div>
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="#home" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20 group-hover:scale-105 transition">
+          VT
+        </div>
+        <div>
+          <span class="font-bold text-base sm:text-lg tracking-tight block group-hover:text-sky-400 transition">Sanika Patil</span>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-status inline-block"></span>
+            <span class="text-[11px] font-medium text-slate-400 tracking-wide">Automation & Robotics Engineer</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#home" class="nav-link hover:text-sky-400">Home</a>
+        <a href="#projects" class="nav-link hover:text-sky-400">Projects</a>
+        <a href="#simulator" class="nav-link hover:text-sky-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-cube text-sky-400 text-xs"></i> 3D Robot Twin
+        </a>
+        <a href="#skills" class="nav-link hover:text-sky-400">Skills</a>
+        <a href="#workflow" class="nav-link hover:text-sky-400">Workflow</a>
+        <a href="resume.html" class="nav-link text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold">
+          <i class="fa-solid fa-file-pdf text-xs"></i> Resume
+        </a>
+        <a href="#contact" class="nav-link hover:text-sky-400">Contact</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden sm:flex items-center gap-3">
+        <a href="resume.html" 
+           class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold hover:bg-amber-500 hover:text-slate-950 transition">
+          <i class="fa-solid fa-file-lines text-xs"></i> View Resume
+        </a>
+        <a href="https://github.com/SanikaPatil-2101" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 border border-white/10 text-slate-200 text-xs font-medium hover:bg-slate-800 hover:border-sky-500/50 hover:text-white transition">
+          <i class="fa-brands fa-github text-sm"></i> GitHub
+        </a>
+        <a href="#contact" 
+           class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-sky-500 text-white text-xs font-semibold hover:bg-sky-600 shadow-md shadow-sky-500/20 transition">
+          <i class="fa-solid fa-paper-plane text-[10px]"></i> Hire Me
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-white p-2">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden bg-slate-900/95 border-b border-white/10 px-4 pt-3 pb-6 space-y-3 text-sm font-medium text-slate-300">
+      <a href="#home" class="block py-2 hover:text-sky-400">Home</a>
+      <a href="#projects" class="block py-2 hover:text-sky-400">Projects</a>
+      <a href="#simulator" class="block py-2 hover:text-sky-400">3D Robot Twin</a>
+      <a href="#skills" class="block py-2 hover:text-sky-400">Skills</a>
+      <a href="#workflow" class="block py-2 hover:text-sky-400">Workflow</a>
+      <a href="resume.html" class="block py-2 text-amber-400 hover:text-amber-300 font-semibold">Resume (PDF)</a>
+      <a href="#contact" class="block py-2 hover:text-sky-400">Contact</a>
+      <div class="pt-3 border-t border-white/10 flex gap-2">
+        <a href="https://github.com/SanikaPatil-2101" target="_blank" class="w-1/2 text-center py-2 rounded bg-slate-800 text-white text-xs">GitHub</a>
+        <a href="#contact" class="w-1/2 text-center py-2 rounded bg-sky-500 text-white text-xs">Hire Me</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="relative pt-16 pb-20 sm:pt-24 sm:pb-28 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-4xl mx-auto">
+        <!-- Status Pill -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-6">
+          <i class="fa-solid fa-robot text-xs"></i> Automation & Robotics Engineering • ROS 2 Digital Twins • Embedded IoT • CAD
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+          Engineering Intelligent Systems From <span class="text-gradient">Precision CAD</span> To <span class="text-gradient">ROS 2 & IoT</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+          Hi, I'm <strong class="text-slate-200">Sanika Patil</strong>. An <strong class="text-sky-400">Automation & Robotics Engineer</strong> bridging electro-mechanical actuation and intelligent software: designing precision robotic assemblies, deriving kinematic physics models in ROS 2 & Gazebo, and building real-time embedded firmware on ESP32 & Arduino.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+          <a href="#projects" class="px-6 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 hover:shadow-sky-500/40 hover:-translate-y-0.5 transition flex items-center gap-2">
+            <i class="fa-solid fa-cubes-stacked"></i> Explore Projects
+          </a>
+          <a href="#simulator" class="px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 hover:border-sky-500/40 text-slate-200 font-semibold text-sm hover:-translate-y-0.5 transition flex items-center gap-2">
+            <i class="fa-solid fa-cube text-sky-400"></i> Interactive 3D Robot Twin
+          </a>
+          <a href="resume.html" class="px-6 py-3.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-semibold text-sm hover:-translate-y-0.5 transition flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf text-amber-400"></i> View Resume
+          </a>
+        </div>
+
+        <!-- Quick Metrics Counter Strip -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          <div class="glass-card p-5 rounded-2xl text-center">
+            <div class="text-3xl font-extrabold text-sky-400 font-mono mb-1">5-DOF</div>
+            <div class="text-xs font-medium text-slate-400">Articulated Robotic Arm Twin</div>
+          </div>
+          <div class="glass-card p-5 rounded-2xl text-center">
+            <div class="text-3xl font-extrabold text-indigo-400 font-mono mb-1">ROS 2</div>
+            <div class="text-xs font-medium text-slate-400">Humble & Gazebo Kinematics</div>
+          </div>
+          <div class="glass-card p-5 rounded-2xl text-center">
+            <div class="text-3xl font-extrabold text-emerald-400 font-mono mb-1">ESP32</div>
+            <div class="text-xs font-medium text-slate-400">Industrial NVS IoT Telemetry</div>
+          </div>
+          <div class="glass-card p-5 rounded-2xl text-center">
+            <div class="text-3xl font-extrabold text-amber-400 font-mono mb-1">100%</div>
+            <div class="text-xs font-medium text-slate-400">Open-Source Engineering Code</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Robot Arm Kinematics & 3D Twin Section -->
+  <section id="simulator" class="py-20 bg-slate-900/40 border-y border-white/5 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 uppercase tracking-widest">
+          Robotics Interactive Lab
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">
+          Robotic Arm Digital Twin & Kinematics Studio
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Switch between the <strong>3D WebGL CAD Digital Twin</strong> (orbit, pan, and zoom around the real Fusion 360 meshes) and the <strong>Trigonometric Forward Kinematics Model</strong> below.
+        </p>
+
+        <!-- View Mode Switcher Tabs -->
+        <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-white/10 mt-6">
+          <button id="tabBtn3D" onclick="switchSimView('3d')" class="px-5 py-2 rounded-lg text-xs font-semibold bg-sky-500 text-white transition flex items-center gap-2">
+            <i class="fa-solid fa-cube text-xs"></i> 3D WebGL Twin (CAD Meshes)
+          </button>
+          <button id="tabBtn2D" onclick="switchSimView('2d')" class="px-5 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+            <i class="fa-solid fa-draw-polygon text-xs"></i> 2D Kinematics Planar Model
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Visualizer Area (Col 7) -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+          
+          <!-- 3D WebGL Container -->
+          <div id="threeView" class="relative w-full aspect-[4/3] max-w-xl mx-auto rounded-2xl overflow-hidden border border-sky-500/30 shadow-2xl bg-slate-950">
+            <div id="threeContainer" class="w-full h-full"></div>
+            
+            <!-- Loading Indicator -->
+            <div id="threeLoading" class="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center gap-2 z-10 pointer-events-none">
+              <i class="fa-solid fa-circle-notch fa-spin text-sky-400 text-2xl"></i>
+              <span class="text-xs text-slate-400">Loading CAD Meshes (Base, Shoulder, Arm, Gripper)...</span>
+            </div>
+
+            <!-- Orbit Hints -->
+            <div class="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur border border-white/10 px-3 py-1.5 rounded-lg text-[10px] text-slate-300 font-mono">
+              <i class="fa-solid fa-hand-pointer text-sky-400 mr-1"></i> Orbit: Drag | Zoom: Scroll
+            </div>
+            <button onclick="window.resetThreeCamera && window.resetThreeCamera()" class="absolute bottom-3 right-3 bg-slate-950/80 hover:bg-slate-800 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] text-slate-300 font-mono flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-arrows-rotate text-xs"></i> Reset View
+            </button>
+          </div>
+
+          <!-- 2D Canvas Container (Hidden by default) -->
+          <div id="canvasView" class="hidden relative w-full aspect-[4/3] max-w-xl mx-auto">
+            <canvas id="robotCanvas" class="w-full h-full block"></canvas>
+            <div class="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur border border-white/10 px-3 py-1.5 rounded-lg text-[11px] text-slate-300 font-mono">
+              Work Envelope: R = 280 mm
+            </div>
+            <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur border border-white/10 px-3 py-1.5 rounded-lg text-[11px] text-emerald-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-status"></span> Live FK Engine
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry & Controls Console (Col 5) -->
+        <div class="lg:col-span-5 glass-card p-6 sm:p-8 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-sky-400"></i> Joint Actuator Console
+            </h3>
+            <span class="text-xs text-slate-400 font-mono">50 Hz PWM Sync</span>
+          </div>
+
+          <!-- Joint 1 Slider -->
+          <div class="mb-5">
+            <div class="flex justify-between text-xs font-semibold mb-2">
+              <span class="text-slate-300 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> J1 Base Turntable (&theta;<sub>1</sub>)
+              </span>
+              <span id="valQ1" class="text-sky-400 font-mono text-sm">0°</span>
+            </div>
+            <input id="sliderQ1" type="range" min="-90" max="90" value="0" class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Joint 2 Slider -->
+          <div class="mb-5">
+            <div class="flex justify-between text-xs font-semibold mb-2">
+              <span class="text-slate-300 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> J2 Shoulder Pitch (&theta;<sub>2</sub>)
+              </span>
+              <span id="valQ2" class="text-indigo-400 font-mono text-sm">35°</span>
+            </div>
+            <input id="sliderQ2" type="range" min="-10" max="105" value="35" class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Joint 3 Slider -->
+          <div class="mb-6">
+            <div class="flex justify-between text-xs font-semibold mb-2">
+              <span class="text-slate-300 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> J3 Elbow Pitch (&theta;<sub>3</sub>)
+              </span>
+              <span id="valQ3" class="text-purple-400 font-mono text-sm">-30°</span>
+            </div>
+            <input id="sliderQ3" type="range" min="-90" max="90" value="-30" class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Action Control Buttons -->
+          <div class="grid grid-cols-3 gap-2.5 mb-6">
+            <button id="btnWave" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition border border-white/5 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-play text-[10px]"></i> Wave Motion
+            </button>
+            <button id="btnGripper" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition border border-white/5 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-hand-fist text-[10px]"></i> Gripper: Open
+            </button>
+            <button id="btnReset" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition border border-white/5 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-rotate-left text-[10px]"></i> Reset
+            </button>
+          </div>
+
+          <!-- Real-Time Cartesian Telemetry Box -->
+          <div class="bg-slate-950/90 rounded-xl p-4 border border-white/10 font-mono">
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider mb-2 font-semibold flex items-center justify-between">
+              <span>TCP Cartesian Coordinates</span>
+              <span class="text-sky-400 text-[10px]">Frame: {base}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-center">
+              <div class="bg-slate-900/70 p-2.5 rounded-lg border border-white/5">
+                <div class="text-xs text-slate-400">Position X</div>
+                <div id="valX" class="text-lg font-bold text-sky-400 mt-0.5">182 mm</div>
+              </div>
+              <div class="bg-slate-900/70 p-2.5 rounded-lg border border-white/5">
+                <div class="text-xs text-slate-400">Position Y</div>
+                <div id="valY" class="text-lg font-bold text-indigo-400 mt-0.5">146 mm</div>
+              </div>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-3 border-t border-white/5 pt-2 leading-relaxed">
+              FK Model: X = L<sub>1</sub>cos(&theta;<sub>1</sub>) + L<sub>2</sub>cos(&theta;<sub>1</sub>+&theta;<sub>2</sub>) + L<sub>3</sub>cos(&theta;<sub>1</sub>+&theta;<sub>2</sub>+&theta;<sub>3</sub>)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects Section -->
+  <section id="projects" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 uppercase tracking-widest">
+            Engineering Portfolio Showcase
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+            Featured Projects & Systems
+          </h2>
+          <p class="text-slate-400 text-sm mt-2 max-w-xl">
+            From precision robotic digital twins to cloud industrial IoT controllers and additive manufacturing machines.
+          </p>
+        </div>
+
+        <!-- Filter Tab Buttons -->
+        <div class="flex flex-wrap gap-2 mt-6 md:mt-0">
+          <button data-filter="all" class="filter-btn px-3.5 py-1.5 rounded-lg bg-sky-500 text-white text-xs font-medium transition">All</button>
+          <button data-filter="robotics" class="filter-btn px-3.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition">Robotics & ROS 2</button>
+          <button data-filter="iot" class="filter-btn px-3.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition">Embedded & IoT</button>
+          <button data-filter="cad" class="filter-btn px-3.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition">CAD & Mechanics</button>
+        </div>
+      </div>
+
+      <!-- Project Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Project 1: ROS 2 Robotic Arm -->
+        <div class="project-card glass-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between" data-category="robotics">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                Robotics & Digital Twin
+              </span>
+              <a href="https://github.com/SanikaPatil-2101/6dof-robotic-arm-ros2" target="_blank" class="text-slate-400 hover:text-white text-sm transition">
+                <i class="fa-brands fa-github text-lg"></i>
+              </a>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-sky-400 transition">
+              5-DOF Articulated Robotic Arm Digital Twin & Geared Gripper
+            </h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+              Comprehensive ROS 2 Humble package designed parametrically in Autodesk Fusion 360. Features URDF/Xacro kinematic physics, a Three.js 3D Web Command Studio at port 8080 with RGB cube sorting, and real-time serial synchronization to an Arduino/ESP32 servo controller.
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="tech-pill"><i class="fa-solid fa-code-branch text-sky-400"></i> ROS 2 Humble</span>
+              <span class="tech-pill">URDF / Xacro</span>
+              <span class="tech-pill">Three.js 3D Twin</span>
+              <span class="tech-pill">RViz2</span>
+              <span class="tech-pill">Fusion 360 CAD</span>
+              <span class="tech-pill">Serial Bridge</span>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <button onclick="openProjectModal('ros2-arm')" class="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 transition">
+              Technical Specs & Architecture <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+            <a href="https://github.com/SanikaPatil-2101/6dof-robotic-arm-ros2" target="_blank" class="text-xs font-medium text-slate-400 hover:text-white transition">
+              View Repository →
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 2: ESP32 IoT Smart Relay -->
+        <div class="project-card glass-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between" data-category="iot">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Industrial Embedded IoT
+              </span>
+              <a href="https://github.com/SanikaPatil-2101/esp32-industrial-iot-controller" target="_blank" class="text-slate-400 hover:text-white text-sm transition">
+                <i class="fa-brands fa-github text-lg"></i>
+              </a>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">
+              Industrial IoT Smart Relay & Power Monitoring Controller
+            </h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+              Engineered on the dual-core ESP32 for factory equipment actuation and continuous electrical energy accumulation ($kWh$). Leverages Non-Volatile Flash memory (`Preferences.h`) to retain telemetry across unexpected plant power shutdowns.
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="tech-pill"><i class="fa-solid fa-microchip text-emerald-400"></i> ESP-WROOM-32</span>
+              <span class="tech-pill">FreeRTOS</span>
+              <span class="tech-pill">PlatformIO</span>
+              <span class="tech-pill">Blynk 2.0 Cloud</span>
+              <span class="tech-pill">NVS Flash Storage</span>
+              <span class="tech-pill">Optocoupler Isolation</span>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <button onclick="openProjectModal('esp32-iot')" class="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 transition">
+              Technical Specs & Architecture <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+            <a href="https://github.com/SanikaPatil-2101/esp32-industrial-iot-controller" target="_blank" class="text-xs font-medium text-slate-400 hover:text-white transition">
+              View Repository →
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 3: Autonomous Mobile Robot -->
+        <div class="project-card glass-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between" data-category="ros">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                ROS 2 & Autonomous Navigation
+              </span>
+              <a href="https://github.com/SanikaPatil-2101/Autonomous-mobile-robot-" target="_blank" class="text-slate-400 hover:text-white text-sm transition">
+                <i class="fa-brands fa-github text-lg"></i>
+              </a>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">
+              Differential-Drive Autonomous Mobile Robot (AMR)
+            </h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+              Simulation-first autonomous mobile robot engineered with ROS 2 Jazzy and Gazebo Harmonic. Features GPU LiDAR sensor pipelines, robot_localization EKF odometry fusion, SLAM Toolbox mapping, and Nav2 waypoint navigation.
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="tech-pill"><i class="fa-solid fa-robot text-sky-400"></i> ROS 2 Jazzy</span>
+              <span class="tech-pill">Gazebo Harmonic</span>
+              <span class="tech-pill">Nav2</span>
+              <span class="tech-pill">SLAM Toolbox</span>
+              <span class="tech-pill">URDF / Xacro</span>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+            <a href="https://github.com/SanikaPatil-2101/Autonomous-mobile-robot-" target="_blank" class="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 transition">
+              View Repository ?
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Competencies & Skill Matrix -->
+  <section id="skills" class="py-24 bg-slate-900/30 border-y border-white/5 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 uppercase tracking-widest">
+          Skills & Specializations
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">
+          Engineering Skill Matrix
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Comprehensive electro-mechanical engineering domain expertise across mechanical design, advanced robotics software, embedded electronics, and industrial automation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Robotics & Simulation -->
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 text-xl mb-5">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Robotics & Simulation</h3>
+          <p class="text-xs text-slate-400 mb-4">Kinematics modeling, digital twin design, and simulation environments.</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sky-400"></i> ROS 2 (Humble Hawksbill)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sky-400"></i> URDF & Xacro Modeling</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sky-400"></i> Forward & Inverse Kinematics (FK / IK)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sky-400"></i> RViz2 & Gazebo Physics Simulation</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sky-400"></i> Hardware-in-the-Loop Serial Bridges</li>
+          </ul>
+        </div>
+
+        <!-- Mechanical CAD / CAM -->
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl mb-5">
+            <i class="fa-solid fa-compass-drafting"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Mechanical CAD & Design</h3>
+          <p class="text-xs text-slate-400 mb-4">Precision mechanical engineering, assembly, and manufacturing drawings.</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-indigo-400"></i> Autodesk Fusion 360</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-indigo-400"></i> Dassault Systèmes SolidWorks</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-indigo-400"></i> Geometric Dimensioning & Tolerancing (GD&T)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-indigo-400"></i> 3D Printing & Rapid Prototyping (FDM)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-indigo-400"></i> 3D STEP Assembly & 2D Drafting (PDF)</li>
+          </ul>
+        </div>
+
+        <!-- Embedded Systems & IoT -->
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl mb-5">
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Embedded Systems & IoT</h3>
+          <p class="text-xs text-slate-400 mb-4">Microcontroller firmware, cloud telemetry, and sensor integration.</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> ESP32 (Dual-Core) & Arduino</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> PlatformIO & Arduino IDE</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> FreeRTOS Multitasking & Timers</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Blynk 2.0 Cloud Telemetry & Apps</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> NVS Flash Storage Persistence</li>
+          </ul>
+        </div>
+
+        <!-- Industrial Automation -->
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl mb-5">
+            <i class="fa-solid fa-industry"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Industrial Automation</h3>
+          <p class="text-xs text-slate-400 mb-4">Programmable controllers, relay logic, and industrial safety architecture.</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Siemens S7-1200 PLC</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Siemens TIA Portal</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Ladder Logic (LAD) Programming</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Optocoupler Galvanic Isolation</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Industrial Sensors (Proximity, Optical, Encoders)</li>
+          </ul>
+        </div>
+
+        <!-- Software & Programming -->
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl mb-5">
+            <i class="fa-solid fa-laptop-code"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Software & Programming</h3>
+          <p class="text-xs text-slate-400 mb-4">Robotics computing, script automation, and web visualization.</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> C / C++ (Embedded & ROS)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Python (Robotics & Scripting)</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> JavaScript (ES6+) & HTML5 Canvas</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Three.js WebGL 3D Visualization</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Git & GitHub Version Control</li>
+          </ul>
+        </div>
+
+        <!-- Core Engineering Strengths -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl mb-5">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Engineering Philosophy</h3>
+            <p class="text-xs text-slate-400 mb-4">Methodology applied across every system built:</p>
+            <p class="text-xs text-slate-300 leading-relaxed italic">
+              "Design with physical reality in mind first — tolerances, thermal dissipation, and inertia — then elevate it with robust mathematical simulation and reliable embedded firmware."
+            </p>
+          </div>
+          <div class="mt-4 pt-4 border-t border-white/5">
+            <span class="text-[11px] text-slate-400">Location: <strong>Maharashtra, India</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Engineering Architecture & Workflow -->
+  <section id="workflow" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 uppercase tracking-widest">
+          Development Pipeline
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">
+          End-to-End System Architecture
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          How mechanical concepts translate into fully operational, simulated, and cloud-monitored automation solutions.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Step 1 -->
+        <div class="glass-card p-6 rounded-2xl relative">
+          <div class="text-4xl font-extrabold text-sky-500/20 font-mono mb-4">01</div>
+          <h4 class="text-base font-bold text-white mb-2">Parametric CAD Design</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Drafting link geometries in Fusion 360 / SolidWorks, accounting for bearings, servo horns, fastener clearances, and center-of-mass distributions.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-card p-6 rounded-2xl relative">
+          <div class="text-4xl font-extrabold text-indigo-500/20 font-mono mb-4">02</div>
+          <h4 class="text-base font-bold text-white mb-2">URDF Kinematic Modeling</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Extracting mesh collision hulls and inertial matrices to form unified Xacro trees with mimic joints for RViz2, Gazebo, and web Three.js digital twins.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-card p-6 rounded-2xl relative">
+          <div class="text-4xl font-extrabold text-emerald-500/20 font-mono mb-4">03</div>
+          <h4 class="text-base font-bold text-white mb-2">Embedded Electronics & Bridge</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Writing C++ firmware for ESP32 and Arduino, implementing 50 Hz PWM angle mapping, serial synchronization protocols, and optical relay isolation.
+          </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="glass-card p-6 rounded-2xl relative">
+          <div class="text-4xl font-extrabold text-amber-500/20 font-mono mb-4">04</div>
+          <h4 class="text-base font-bold text-white mb-2">Cloud Telemetry & Automation</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Bridging hardware metrics to Blynk Cloud and industrial web telemetry dashboards with non-volatile flash checkpoints, energy formulas, and charts.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Collaboration Section -->
+  <section id="contact" class="py-24 bg-slate-900/40 border-t border-white/5 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 uppercase tracking-widest">
+        Let's Connect
+      </span>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-3 mb-4">
+        Ready to Build Next-Gen Robotics & Automation?
+      </h2>
+      <p class="text-slate-400 text-sm sm:text-base leading-relaxed mb-10 max-w-2xl mx-auto">
+        I am open to full-time engineering roles, robotics research projects, and automation consulting. Reach out directly or explore my open-source work on GitHub.
+      </p>
+
+      <!-- Direct Contact Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
+        <!-- Card 1: Email -->
+        <div class="glass-card p-5 rounded-xl flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">Direct Email</div>
+              <div class="text-xs font-semibold text-slate-200 mt-0.5">sanikapatil2101@gmail.com</div>
+            </div>
+          </div>
+          <button onclick="copyEmail()" class="text-slate-400 hover:text-sky-400 text-xs p-1" title="Copy Email">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+
+        <!-- Card 2: GitHub -->
+        <a href="https://github.com/SanikaPatil-2101" target="_blank" rel="noopener noreferrer" 
+           class="glass-card p-5 rounded-xl flex items-center gap-3 hover:border-sky-500/40 transition group">
+          <div class="w-10 h-10 rounded-lg bg-slate-800 text-slate-200 flex items-center justify-center text-lg group-hover:text-white transition">
+            <i class="fa-brands fa-github"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">GitHub Profile</div>
+            <div class="text-xs font-semibold text-slate-200 mt-0.5">github.com/SanikaPatil-2101</div>
+          </div>
+        </a>
+
+        <!-- Card 3: Location -->
+        <div class="glass-card p-5 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">Current Location</div>
+            <div class="text-xs font-semibold text-slate-200 mt-0.5">Maharashtra, India</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons in Contact -->
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="mailto:sanikapatil2101@gmail.com?subject=Engineering%20Inquiry%20via%20Portfolio" 
+           class="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-sm shadow-xl shadow-sky-500/25 hover:shadow-sky-500/40 transition">
+          <i class="fa-solid fa-paper-plane text-xs"></i> Send Direct Email
+        </a>
+        <a href="resume.html" 
+           class="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/20 hover:shadow-amber-500/40 transition">
+          <i class="fa-solid fa-file-pdf text-xs"></i> Download Printable Resume (PDF)
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 bg-slate-950 border-t border-white/5 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        © 2026 <strong>Sanika Patil</strong>. Designed & Built for Robotics & Automation.
+      </div>
+      <div class="flex items-center gap-6 text-slate-400">
+        <a href="https://github.com/SanikaPatil-2101/6dof-robotic-arm-ros2" target="_blank" class="hover:text-sky-400 transition">ROS 2 Arm</a>
+        <a href="https://github.com/SanikaPatil-2101/esp32-industrial-iot-controller" target="_blank" class="hover:text-sky-400 transition">ESP32 IoT</a>
+        <a href="https://github.com/SanikaPatil-2101/Autonomous-mobile-robot-" target="_blank" class="hover:text-sky-400 transition">Mobile Robot</a>
+        <a href="resume.html" class="text-amber-400 hover:underline">Resume (PDF)</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Project Detail Modal -->
+  <div id="projectModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="relative bg-slate-900 border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl">
+      <button id="modalClose" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification for Copy -->
+  <div id="copyToast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-emerald-500/40 text-emerald-400 px-4 py-2.5 rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 opacity-0 pointer-events-none transition-opacity duration-300">
+    <i class="fa-solid fa-circle-check"></i> Email copied to clipboard!
+  </div>
+
+  <!-- Switch View Helper -->
+  <script>
+    function switchSimView(mode) {
+      const v3 = document.getElementById('threeView');
+      const v2 = document.getElementById('canvasView');
+      const b3 = document.getElementById('tabBtn3D');
+      const b2 = document.getElementById('tabBtn2D');
+
+      if (mode === '3d') {
+        v3.classList.remove('hidden');
+        v2.classList.add('hidden');
+        b3.classList.add('bg-sky-500', 'text-white');
+        b3.classList.remove('text-slate-400');
+        b2.classList.remove('bg-sky-500', 'text-white');
+        b2.classList.add('text-slate-400');
+        if (window.onWindowResizeThree) {
+          setTimeout(window.onWindowResizeThree, 20);
+        }
+      } else {
+        v2.classList.remove('hidden');
+        v3.classList.add('hidden');
+        b2.classList.add('bg-sky-500', 'text-white');
+        b2.classList.remove('text-slate-400');
+        b3.classList.remove('bg-sky-500', 'text-white');
+        b3.classList.add('text-slate-400');
+        if (window.resizeRobotSim) {
+          setTimeout(window.resizeRobotSim, 20);
+        }
+      }
+    }
+  </script>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/robot-sim.js"></script>
+  <script src="js/stl-data.js"></script>
+  <script src="js/three-robot.js"></script>
+</body>
+</html>
